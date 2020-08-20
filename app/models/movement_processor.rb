@@ -1,4 +1,7 @@
 class MovementProcessor
+  #todo
+  # add check if bad spot is tail (will be free next move)
+
   MOVEMENTS = %w(up down left right)
   X_DIRECTIONS = {
     1 => 'right',
@@ -38,7 +41,7 @@ class MovementProcessor
     end
 
     kill_moves.each { |km| return km.first unless move_bad?(km.last) }
-    safe_moves.each { |sm| return sm.first unless move_bad?(sm.last) }
+    (safe_moves - bad_ideas).each { |sm| return sm.first unless move_bad?(sm.last) }
     bad_ideas.each { |bm| return bm.first unless move_bad?(bm.last) }
 
     emergency_move
@@ -124,7 +127,7 @@ class MovementProcessor
   def not_great_idea(move)
     possible_moves = possible_moves_from_location(location: move.last)
     possible_moves.any? do |m|
-      other_heads.any? { |head| head['head'] == m }
+      other_heads.any? { |head| head['head'] == m.last }
     end
   end
 
